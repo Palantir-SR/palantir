@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ${PALANTIR_CODE_ROOT}/palantir/script/common_funcs.sh
+
 function _usage()
 {
 cat << EOF
@@ -34,10 +36,13 @@ function _set_conda(){
 function _transcode()
 {
     #cut and encode (2160p)
-    python $PALANTIR_CODE_ROOT/palantir/tool/encode_video.py --output_video_dir $PALANTIR_DATA_ROOT/$1/video --input_video_path $PALANTIR_DATA_ROOT/video/$1.webm --start 0 --duration 300 --bitrate 12000 --mode cut_and_resize_and_encode --output_width 3840 --output_height 2160 --gop $2
+    _set_output_size 2160
+    _set_hr_video_name
+    #python $PALANTIR_CODE_ROOT/palantir/tool/encode_video.py --output_video_dir $PALANTIR_DATA_ROOT/$1/video --input_video_path $PALANTIR_DATA_ROOT/video/$1.webm --start 0 --duration 300 --bitrate $output_bitrate --mode cut_and_resize_and_encode --output_width $output_width --output_height $output_height --gop $2
 
     #encode (480p)
-    python $PALANTIR_CODE_ROOT/palantir/tool/encode_video.py --output_video_dir $PALANTIR_DATA_ROOT/$1/video --input_video_path $PALANTIR_DATA_ROOT/$1/video/2160p_12000kbps_s0_d300.webm --bitrate 1800 --output_width 854 --output_height 480 --start 0 --duration 300 --mode resize_and_encode --gop $2
+    _set_input_size 480
+    python $PALANTIR_CODE_ROOT/palantir/tool/encode_video.py --output_video_dir $PALANTIR_DATA_ROOT/$1/video --input_video_path $PALANTIR_DATA_ROOT/$1/video/$hr_video_name --bitrate $input_bitrate --output_width $input_width --output_height $input_height --start 0 --duration 300 --mode resize_and_encode --gop $2
 }
 
 [[ ($# -ge 1)  ]] || { echo "[ERROR] Invalid number of arguments. See -h for help."; exit 1;  }

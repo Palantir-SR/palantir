@@ -92,7 +92,12 @@ $PALANTIR_CODE_ROOT/palantir/tool/script/encode_video.sh -c 1 -g 60
 
 ### 3. Prepare DNNs 
 
-TODO
+* Train a DNN
+```
+$PALANTIR_CODE_ROOT/palantir/dnn/script/train_video.sh -g 0 -c 1 -q high -i 480 -o 2160
+```
+
+[Details are described in this file.](palantir/dnn/README.md)
 
 ### 4. Generate a cache profile
 
