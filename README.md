@@ -42,7 +42,6 @@ Lastly, Palantir is currently protected under the patent and is retricted to be 
 ## Guide
 We provide a step-by-step guide with a single video (whose index is 1).
 
-
 ### 1. Setup
 * Clone the Palantir docker repository
 ```
@@ -99,14 +98,113 @@ $PALANTIR_CODE_ROOT/palantir/dnn/script/train_video.sh -g 0 -c 1 -q high -i 480 
 
 [Details are described in this file.](palantir/dnn/README.md)
 
-### 4. Generate a cache profile
+### 4. Compute PSNR under different settings 
 
+* Setup: Build the SR-integrated codec (x86_64)
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/setup.sh
+```
+
+#### 4.1 NeuroScaler (Baseline #1)
+
+* Generate the cache profiles for every chunk
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a neuroscaler -W 854 -H 480 -m 5 -p generate_profile
+```
+
+* Measure PSNR for all the generated cache profiles
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a neuroscaler -W 854 -H 480 -m 5 -p measure_profile
+```
+
+* Aggregate the cache profiles across all chunks to obtain the average PSNR
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/aggregate.sh -a neuroscaler -c 1 -q high -i 480 -o 2160 -W 854 -H 480 -m 5 -n 150
+```
+
+#### 4.2 Key+Uniform (Baseline #2)
+
+* Generate the cache profiles for every chunk
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a key_uniform -W 170 -H 160 -m 75 -p generate_profile
+```
+
+* Measure PSNR for all the generated cache profiles
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a key_uniform -W 170 -H 160 -m 75 -p measure_profile
+```
+
+* Aggregate the cache profiles across all chunks to obtain the average PSNR
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/aggregate.sh -a key_uniform -c 1 -q high -i 480 -o 2160 -W 170 -H 160 -m 75 -n 150
+```
+
+#### 4.3 Palantir
+
+* Generate the cache profiles for every chunk
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir -W 170 -H 160 -m 75 -p generate_profile
+```
+
+* Measure PSNR for all the generated cache profiles
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir -W 170 -H 160 -m 75 -p measure_profile
+```
+
+* Aggregate the cache profiles across all chunks to obtain the average PSNR
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/aggregate.sh -a palantir -c 1 -q high -i 480 -o 2160 -W 170 -H 160 -m 75 -n 150
+```
+
+#### 4.4 (Optional) Applying bilinear interpolation on all the frames
+
+* Save the average PSNR value
+```
 TODO
+```
 
-### 5. Compare Palantir vs. baselines
+#### 4.5 (Optional) Applying DNN-based SR on all the frames
 
+* Save the average PSNR value
+```
 TODO
+```
 
-### 6. Play Palantir in Android smartphones 
+#### 4.6 (Optional) Palantir w/o height (for ablation study; see Sec. 6.4 of the paper)
 
+* Generate the cache profile
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_weight -W 170 -H 160 -m 5 -p generate_profile
+```
+
+#### 4.7 (Optional) Palantir w/o TC (for ablation study; see Sec. 6.4 of the paper)
+
+* Generate the cache profile
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_tc -W 170 -H 160 -m 5 -p generate_profile
+```
+
+#### 4.8 (Optional) Vanilla Palantir (for ablation study; see Sec. 6.4 of the paper)
+
+* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a vanilla_palantir -W 170 -H 160 -m 5 -p generate_profile
+```
+
+#### 4.9 (Optional) Partially optimized Palantir (for ablation study; see Sec. 6.4 of the paper)
+
+* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a partially_optimized_palantir -W 170 -H 160 -m 5 -p generate_profile
+```
+
+### 5. Execute in Android smartphones 
+
+* TODO
+
+### 6 (Optional) Preliminary experiment (see Sec. 4.1 of the paper)
+
+* TODO
+```
 TODO
+```
