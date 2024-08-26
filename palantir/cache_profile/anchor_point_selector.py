@@ -49,7 +49,7 @@ class AnchorPointSelector():
         self.postfix=None
         self.maximum_anchor = maximum_anchor
         
-    def _select_anchor_point_set_palantir(self, chunk_idx, processing_mode="generate_profile", disable_weights=False, disable_texture_complexities=False):
+    def _select_anchor_point_set_palantir(self, chunk_idx, algorithm_type, processing_mode="generate_profile", disable_weights=False, disable_texture_complexities=False, intra_parallelism=True, inter_parallelism=True):
         assert processing_mode in ["generate_profile", "measure_profile"]
 
         postfix = 'chunk{:04d}'.format(chunk_idx)
@@ -57,7 +57,7 @@ class AnchorPointSelector():
         log_dir = os.path.join(self.dataset_dir, 'log', self.lr_video_name, self.model.name, postfix)
         os.makedirs(log_dir, exist_ok=True)
         os.makedirs(cache_profile_dir, exist_ok=True)
-        algorithm_type = 'palantir{}{}_{}_w{}_h{}'.format("_disable_weights" if disable_weights else "", "_disable_texture_complexities" if disable_texture_complexities else "", self.maximum_anchor, self.patch_width, self.patch_height)
+        algorithm_type = '{}_{}_w{}_h{}'.format(algorithm_type, self.maximum_anchor, self.patch_width, self.patch_height)
         self.algorithm_type = algorithm_type
 
         ###########step 1: save hr images ##########
@@ -71,7 +71,7 @@ class AnchorPointSelector():
         ###########step 2: construct the dependency graph ##########
 
         if processing_mode == "generate_profile":
-            graph = libvpx.fastGraph(self.vpxdec_path, self.num_blocks_per_row, self.num_blocks_per_column, self.patch_width, self.patch_height, self.dataset_dir, postfix, self.lr_video_name, self.hr_video_name, self.lr_height, self.lr_width, self.output_height, self.output_width, os.path.join(self.dataset_dir, "palantir_anchor", self.lr_video_name, self.hr_video_name, algorithm_type), self.gop, num_skipped_frames, num_decoded_frames, disable_weights=disable_weights, disable_texture_complexities=disable_texture_complexities, intra_parallelism=True, inter_parallelism=True, schedulingInterval=self.gop)
+            graph = libvpx.fastGraph(self.vpxdec_path, self.num_blocks_per_row, self.num_blocks_per_column, self.patch_width, self.patch_height, self.dataset_dir, postfix, self.lr_video_name, self.hr_video_name, self.lr_height, self.lr_width, self.output_height, self.output_width, os.path.join(self.dataset_dir, "palantir_anchor", self.lr_video_name, self.hr_video_name, algorithm_type), self.gop, num_skipped_frames, num_decoded_frames, disable_weights=disable_weights, disable_texture_complexities=disable_texture_complexities, intra_parallelism=intra_parallelism, inter_parallelism=inter_parallelism, schedulingInterval=self.gop)
             graph.construct_graph_through_metadata(self.model)
             anchor_blocks = []
             non_root_anchor_blocks = []
@@ -347,11 +347,15 @@ class AnchorPointSelector():
             if algorithm_type == 'preliminary_exp':
                 all_sorted_intra, all_sorted_inter, all_sorted_key_and_altref, all_sorted_normal = self._select_anchor_point_set_palantir(chunk_idx)
             elif algorithm_type == 'palantir':
-                self._select_anchor_point_set_palantir(chunk_idx, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False)
+                self._select_anchor_point_set_palantir(chunk_idx, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False)
+            elif algorithm_type == 'vanilla_palantir':
+                self._select_anchor_point_set_palantir(chunk_idx, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False, intra_parallelism=False, inter_parallelism=False)
+            elif algorithm_type == 'partially_optimized_palantir':
+                self._select_anchor_point_set_palantir(chunk_idx, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False, intra_parallelism=True, inter_parallelism=False)
             elif algorithm_type == 'palantir_wo_weight':
-                self._select_anchor_point_set_palantir(chunk_idx, processing_mode=processing_mode, disable_weights=True, disable_texture_complexities=False)
+                self._select_anchor_point_set_palantir(chunk_idx, algorithm_type, processing_mode=processing_mode, disable_weights=True, disable_texture_complexities=False)
             elif algorithm_type == 'palantir_wo_tc':
-                self._select_anchor_point_set_palantir(chunk_idx, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=True)
+                self._select_anchor_point_set_palantir(chunk_idx, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=True)
             elif algorithm_type == 'neuroscaler':
                 self._select_anchor_point_set_neuroscaler(chunk_idx, processing_mode)
             elif algorithm_type == 'key_uniform':
@@ -378,11 +382,15 @@ class AnchorPointSelector():
                     all_sorted_key_and_altref += sorted_key_and_altref
                     all_sorted_normal += sorted_normal
                 elif algorithm_type == 'palantir':
-                    self._select_anchor_point_set_palantir(i, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False)
+                    self._select_anchor_point_set_palantir(i, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False)
+                elif algorithm_type == 'vanilla_palantir':
+                    self._select_anchor_point_set_palantir(i, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False, intra_parallelism=False, inter_parallelism=False)
+                elif algorithm_type == 'partially_optimized_palantir':
+                    self._select_anchor_point_set_palantir(i, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=False, intra_parallelism=True, inter_parallelism=False)
                 elif algorithm_type == 'palantir_wo_weight':
-                    self._select_anchor_point_set_palantir(i, processing_mode=processing_mode, disable_weights=True, disable_texture_complexities=False)
+                    self._select_anchor_point_set_palantir(i, algorithm_type, processing_mode=processing_mode, disable_weights=True, disable_texture_complexities=False)
                 elif algorithm_type == 'palantir_wo_tc':
-                    self._select_anchor_point_set_palantir(i, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=True)
+                    self._select_anchor_point_set_palantir(i, algorithm_type, processing_mode=processing_mode, disable_weights=False, disable_texture_complexities=True)
                 elif algorithm_type == 'neuroscaler':
                     self._select_anchor_point_set_neuroscaler(i, processing_mode)
                 elif algorithm_type == 'key_uniform':
@@ -401,7 +409,7 @@ class AnchorPointSelector():
     def measure_quality(self, anchor_point_sets, decode_block_cache, num_skipped_frames, num_decoded_frames, postfix):
         q0 = mp.Queue()
         q1 = mp.Queue()
-        decoders = [mp.Process(target=libvpx.offline_cache_quality_mt, args=(q0, q1, self.vpxdec_path, self.dataset_dir, self.lr_video_name, self.hr_video_name, self.model.name, self.output_width, self.output_height)) for i in range(self.num_decoders)]
+        decoders = [mp.Process(target=libvpx.offline_cache_quality_mt, args=(q0, q1, self.vpxdec_path, self.dataset_dir, self.lr_video_name, self.hr_video_name, self.model.name, self.output_width, self.output_height, self.gop)) for i in range(self.num_decoders)]
         for decoder in decoders:
             decoder.start()
         num_decoder_executions = 0

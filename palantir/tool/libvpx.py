@@ -505,8 +505,8 @@ class fastGraph():
 
         command = '{} --codec=vp9 --noblit --frame-buffers=50 --dataset-dir={} \
         --input-video-name={} --decode-mode=decode_block_cache --dnn-mode=offline_dnn --cache-mode=profile_cache \
-        --output-width={} --output-height={} --save-metadata --dnn-name={} --dnn-scale=1 --cache-profile-name={} --threads=1 --patch-width={} --patch-height={} --npatches-per-row={} --npatches-per-column={}  --save-finegrained-metadata --save-metadata --save-metadata-framesize'.format(vpxdec_path, \
-                            dataset_dir, input_video_name, input_video_width, input_video_height, "no_model", cache_profile_name, patch_width, patch_height, num_blocks_per_row, num_blocks_per_column)
+        --output-width={} --output-height={} --save-metadata --dnn-name={} --dnn-scale=1 --cache-profile-name={} --threads=1 --patch-width={} --patch-height={} --npatches-per-row={} --npatches-per-column={} --gop={} --save-finegrained-metadata --save-metadata --save-metadata-framesize'.format(vpxdec_path, \
+                            dataset_dir, input_video_name, input_video_width, input_video_height, "no_model", cache_profile_name, patch_width, patch_height, num_blocks_per_row, num_blocks_per_column, self.gop)
         if skip is not None:
             command += ' --skip={}'.format(skip)
         if limit is not None:
@@ -884,77 +884,7 @@ def offline_dnn_quality_vmaf(vpxdec_path, dataset_dir, input_video_name, referen
                 quality.append(float(line.split('\t')[1]))
         return quality
 
-def offline_cache_metadata(vpxdec_path, dataset_dir, input_video_name,  \
-                                model_name, cache_profile_name, output_width, output_height, skip=None, limit=None, postfix=None):
-    #log file
-    if postfix is not None:
-        log_path = os.path.join(dataset_dir, 'log', input_video_name, model_name, postfix, os.path.basename(cache_profile_name), 'metadata.txt')
-    else:
-        log_path = os.path.join(dataset_dir, 'log', input_video_name, model_name, os.path.basename(cache_profile_name), 'metadata.txt')
-
-    #run sr-integrated decoder
-    input_video_path = os.path.join(dataset_dir, 'video', input_video_name)
-    input_resolution = get_video_profile(input_video_path)['height']
-    scale = output_height // input_resolution
-
-    command = '{} --codec=vp9 --noblit --frame-buffers=50 --dataset-dir={} \
-    --input-video-name={} --decode-mode=decode_cache --dnn-mode=offline_dnn --cache-mode=profile_cache \
-    --output-width={} --output-height={} --save-metadata --dnn-name={} --dnn-scale={} --cache-profile-name={}'.format(vpxdec_path, \
-                        dataset_dir, input_video_name, output_width, output_height, model_name, scale, cache_profile_name)
-    if skip is not None:
-        command += ' --skip={}'.format(skip)
-    if limit is not None:
-        command += ' --limit={}'.format(limit)
-    if postfix is not None:
-        command += ' --postfix={}'.format(postfix)
-    subprocess.check_call(shlex.split(command),stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-
-def offline_cache_quality_vmaf(vpxdec_path, dataset_dir, input_video_name, reference_video_name, model_name, cache_profile_name, output_width, output_height, nblocks_per_row, nblocks_per_column, patch_width, patch_height, psnr_block_format=False, psnr_nblocks_per_row=None, psnr_nblocks_per_column=None, psnr_block_width=None, psnr_block_height=None,  skip=None, limit=None, postfix=None, save_quality=True, save_rgb_frame=False, decode_block_cache=False):
-    #log file
-    if postfix is not None:
-        log_path = os.path.join(dataset_dir, 'log', input_video_name, model_name, postfix, os.path.basename(cache_profile_name), 'quality.txt')
-    else:
-        log_path = os.path.join(dataset_dir, 'log', input_video_name, model_name, os.path.basename(cache_profile_name), 'quality.txt')
-
-    #run sr-integrated decoder
-    input_video_path = os.path.join(dataset_dir, 'video', input_video_name)
-    input_resolution = get_video_profile(input_video_path)['height']
-    scale = output_height // input_resolution
-
-
-    command = '{} --codec=vp9 --noblit --frame-buffers=50 --dataset-dir={} \
-        --input-video-name={} --reference-video-name={} --dnn-mode=offline_dnn --cache-mode=profile_cache \
-        --output-width={} --output-height={} --save-metadata --dnn-name={} --dnn-scale={} --cache-profile-name={} --npatches-per-row={} --npatches-per-column={} --patch-width={} --patch-height={}'.format(vpxdec_path, dataset_dir, input_video_name, reference_video_name, output_width, output_height, model_name, scale, cache_profile_name, nblocks_per_row, nblocks_per_column, patch_width, patch_height)
-    if skip is not None:
-        command += ' --skip={}'.format(skip)
-    if limit is not None:
-        command += ' --limit={}'.format(limit)
-    if postfix is not None:
-        command += ' --postfix={}'.format(postfix)
-    if save_quality:
-        command += ' --save-quality'
-    if save_rgb_frame:
-        command += ' --save-rgbframe'
-    if decode_block_cache:
-        command += ' --decode-mode=decode_block_cache'
-    else:
-        command += ' --decode-mode=decode_cache'
-    if decode_block_cache and psnr_block_format:
-        command += f' --save-quality-block-format --psnr-nblocks-per-column={psnr_nblocks_per_column} --psnr-nblocks-per-row={psnr_nblocks_per_row} --psnr-block-width={psnr_block_width} --psnr-block-height={psnr_block_height}'
-    print(command)
-    subprocess.check_call(shlex.split(command),stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-
-    #load quality from a log file
-    if save_quality:
-        quality = []
-        with open(log_path, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                line = line.strip()
-                quality.append(float(line.split('\t')[-1]))
-        return quality
-
-def offline_cache_quality_mt(q0, q1, vpxdec_path, dataset_dir, input_video_name, reference_video_name, model_name, output_width, output_height):
+def offline_cache_quality_mt(q0, q1, vpxdec_path, dataset_dir, input_video_name, reference_video_name, model_name, output_width, output_height, gop):
     input_video_path = os.path.join(dataset_dir, 'video', input_video_name)
     input_video_profile = get_video_profile(input_video_path)
     input_video_height = input_video_profile['height']
@@ -992,7 +922,7 @@ def offline_cache_quality_mt(q0, q1, vpxdec_path, dataset_dir, input_video_name,
             #run sr-integrated decoder   
             command = '{} --codec=vp9 --noblit --frame-buffers=50 --dataset-dir={} --input-video-name={} --reference-video-name={} --decode-mode={} \
             --dnn-mode=offline_dnn --cache-mode=profile_cache --output-width={} --output-height={} --save-metadata --dnn-name={} --dnn-scale={} \
-            --cache-profile-name={} --threads={} --npatches-per-row={} --npatches-per-column={} --patch-width={} --patch-height={} --save-quality'.format(vpxdec_path, dataset_dir, input_video_name, reference_video_name, decode_mode, output_width, output_height, model_name, scale, cache_profile_name, get_num_threads(input_video_height), nblocks_per_row, nblocks_per_column, patch_width, patch_height)
+            --cache-profile-name={} --threads={} --npatches-per-row={} --npatches-per-column={} --patch-width={} --patch-height={} --gop={} --save-quality'.format(vpxdec_path, dataset_dir, input_video_name, reference_video_name, decode_mode, output_width, output_height, model_name, scale, cache_profile_name, get_num_threads(input_video_height), nblocks_per_row, nblocks_per_column, patch_width, patch_height, gop)
 
             if skip is not None:
                 command += ' --skip={}'.format(skip)
@@ -1054,7 +984,7 @@ def offline_fast_graph_finegrained_metadata(patch_width, patch_height, num_block
 
         command = '{} --codec=vp9 --noblit --frame-buffers=50 --dataset-dir={} \
         --input-video-name={} --decode-mode=decode_block_cache --dnn-mode=offline_dnn --cache-mode=profile_cache \
-        --output-width={} --output-height={} --save-metadata --save-super-finegrained-metadata --dnn-name={} --dnn-scale=1 --cache-profile-name={} --threads=1 --patch-width={} --patch-height={} --npatches-per-row={} --npatches-per-column={}'.format(vpxdec_path, dataset_dir, input_video_name, input_video_width, input_video_height, "no_model", cache_profile_name, patch_width, patch_height, num_blocks_per_row, num_blocks_per_column)
+        --output-width={} --output-height={} --save-metadata --save-super-finegrained-metadata --dnn-name={} --dnn-scale=1 --cache-profile-name={} --threads=1 --patch-width={} --patch-height={} --npatches-per-row={} --npatches-per-column={} --gop={}'.format(vpxdec_path, dataset_dir, input_video_name, input_video_width, input_video_height, "no_model", cache_profile_name, patch_width, patch_height, num_blocks_per_row, num_blocks_per_column, gop)
         if skip is not None:
             command += ' --skip={}'.format(skip)
         if limit is not None:

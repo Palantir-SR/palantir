@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr_video_name', type=str, required=True)
     parser.add_argument('--num_blocks', type=int)
     parser.add_argument('--num_filters', type=int)
-    parser.add_argument('--algorithm', choices=['palantir', 'neuroscaler', 'key_uniform'])
+    parser.add_argument('--algorithm', choices=['palantir', 'palantir_wo_weight', 'palantir_wo_tc', 'vanilla_palantir', 'partially_optimized_palantir', 'neuroscaler', 'key_uniform'])
     parser.add_argument('--lr_height', type=int, default=480)
     parser.add_argument('--output_height', type=int, default=2160)
     parser.add_argument('--model_type', type=str, default='palantir_s')

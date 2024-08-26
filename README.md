@@ -170,41 +170,66 @@ TODO
 TODO
 ```
 
-#### 4.6 (Optional) Palantir w/o height (for ablation study; see Sec. 6.4 of the paper)
-
-* Generate the cache profile
-```
-$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_weight -W 170 -H 160 -m 5 -p generate_profile
-```
-
-#### 4.7 (Optional) Palantir w/o TC (for ablation study; see Sec. 6.4 of the paper)
-
-* Generate the cache profile
-```
-$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_tc -W 170 -H 160 -m 5 -p generate_profile
-```
-
-#### 4.8 (Optional) Vanilla Palantir (for ablation study; see Sec. 6.4 of the paper)
-
-* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
-```
-$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a vanilla_palantir -W 170 -H 160 -m 5 -p generate_profile
-```
-
-#### 4.9 (Optional) Partially optimized Palantir (for ablation study; see Sec. 6.4 of the paper)
-
-* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
-```
-$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a partially_optimized_palantir -W 170 -H 160 -m 5 -p generate_profile
-```
-
 ### 5. Execute in Android smartphones 
 
-* TODO
+* Setup: Build the SR-integrated codec (arm64-v8)
+```
+$PALANTIR_CODE_ROOT/palantir/test/script/setup_local.sh 
+```
 
 ### 6 (Optional) Preliminary experiment (see Sec. 4.1 of the paper)
 
 * TODO
 ```
 TODO
+```
+
+### 7 (Optional) Ablation study (see Sec. 6.4 of the paper)
+
+#### 7.1 Palantir w/o weight
+
+* Generate the cache profiles for every chunk
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_weight -W 170 -H 160 -m 75 -p generate_profile
+```
+
+* Measure PSNR for all the generated cache profiles
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_weight -W 170 -H 160 -m 75 -p measure_profile
+```
+
+* Aggregate the cache profiles across all chunks to obtain the average PSNR
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/aggregate.sh -a palantir_wo_weight -c 1 -q high -i 480 -o 2160 -W 170 -H 160 -m 75 -n 150
+```
+
+#### 7.2 Palantir w/o TC
+
+* Generate the cache profiles for every chunk
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir_wo_tc -W 170 -H 160 -m 75 -p generate_profile
+```
+
+* Measure PSNR for all the generated cache profiles
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a palantir -W 170 -H 160 -m 75 -p measure_profile
+```
+
+* Aggregate the cache profiles across all chunks to obtain the average PSNR
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/aggregate.sh -a palantir -c 1 -q high -i 480 -o 2160 -W 170 -H 160 -m 75 -n 150
+```
+
+#### 7.3 Vanilla Palantir
+
+* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a vanilla_palantir -W 170 -H 160 -m 75 -p generate_profile
+```
+
+#### 7.4 Partially optimized Palantir
+
+* Generate the cache profile (the generated profile should be the same as [Palantir](#43-palantir) but the generation thoughput is much lower)
+```
+$PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a partially_optimized_palantir -W 170 -H 160 -m 75 -p generate_profile
 ```
