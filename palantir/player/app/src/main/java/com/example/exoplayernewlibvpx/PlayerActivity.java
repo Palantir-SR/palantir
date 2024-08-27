@@ -109,7 +109,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else if (resolution.equals("360")) {
             videoName = "360p_1024kbps_s0_d300.webm";
         } else if (resolution.equals("480")) {
-            videoName = "480p_1600kbps_s0_d300.webm";
+            videoName = "480p_1800kbps_s0_d300.webm";
         }
 
         if (newModelPerChunk.equals("Yes")){

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint_ready', action='store_true')
 
     #anchor point selector
-    parser.add_argument('--algorithm', type=str, required=True, choices=['palantir', 'palantir_wo_weight', 'palantir_wo_tc', 'vanilla_palantir', 'partially_optimized_palantir', 'neuroscaler', 'key_uniform', 'preliminary_exp'])
+    parser.add_argument('--algorithm', type=str, required=True, choices=['palantir', 'palantir_wo_weight', 'palantir_wo_tc', 'vanilla_palantir', 'partially_optimized_palantir', 'neuroscaler', 'key_uniform'])
     parser.add_argument('--gop', type=int, default=60)
     parser.add_argument('--profile_name', type=str, required=True)
 

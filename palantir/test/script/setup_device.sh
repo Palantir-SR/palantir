@@ -30,13 +30,14 @@ function _set_conda(){
 
 [[ ($# -ge 1)  ]] || { echo "[ERROR] Invalid number of arguments. See -h for help."; exit 1;  }
 
-while getopts ":c:q:r:a:d:l:n:o:C:p:i:W:H:h" opt; do
+while getopts ":g:a:c:q:r:d:l:o:C:p:i:W:H:h" opt; do
     case $opt in
         h) _usage; exit 0;;
+        g) gop="$OPTARG";;
         a) algorithm="$OPTARG";;
-        c) content=("$OPTARG");;
-        q) quality=("$OPTARG");;
-        r) input_resolution=("$OPTARG");;
+        c) content="$OPTARG";;
+        q) quality="$OPTARG";;
+        r) input_resolution="$OPTARG";;
         d) device_id="$OPTARG";;
         l) limit="$OPTARG";;
         o) output_resolution="$OPTARG";;
@@ -48,6 +49,11 @@ while getopts ":c:q:r:a:d:l:n:o:C:p:i:W:H:h" opt; do
         \?) exit 1;
     esac
 done
+
+if [ -z "${gop+x}" ]; then
+    echo "[ERROR] gop is not set"
+    exit 1;
+fi
 
 if [ -z "${content+x}" ]; then
     echo "[ERROR] content is not set"
@@ -115,4 +121,4 @@ _set_input_size ${input_resolution}
 _set_num_blocks ${input_resolution} ${quality}
 _set_num_filters ${input_resolution} ${quality}
 _set_lr_video_name
-CUDA_VISIBLE_DEVICES=${gpu_index} python ${PALANTIR_CODE_ROOT}/palantir/test/setup_device.py --data_dir ${PALANTIR_DATA_ROOT} --content ${content} --video_name ${lr_video_name} --lib_dir ${PALANTIR_CODE_ROOT}/palantir/test/libs/arm64-v8a --num_blocks ${num_blocks} --num_filters ${num_filters} --algorithm ${algorithm} --device_id ${device_id} --patch_width ${patch_width} --patch_height ${patch_height}  --output_width ${output_width} --output_height ${output_height} ${py_checkpoint_ready_flag} ${chunk_idx_flag} --profile_name ${profile_name} ${limit_flag}
+CUDA_VISIBLE_DEVICES=${gpu_index} python ${PALANTIR_CODE_ROOT}/palantir/test/setup_device.py --data_dir ${PALANTIR_DATA_ROOT} --content ${content} --video_name ${lr_video_name} --lib_dir ${PALANTIR_CODE_ROOT}/palantir/test/libs/arm64-v8a --num_blocks ${num_blocks} --num_filters ${num_filters} --algorithm ${algorithm} --device_id ${device_id} --patch_width ${patch_width} --patch_height ${patch_height}  --output_width ${output_width} --output_height ${output_height} ${py_checkpoint_ready_flag} ${chunk_idx_flag} --profile_name --gop ${gop} ${profile_name} ${limit_flag}

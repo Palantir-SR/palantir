@@ -38,6 +38,7 @@ Lastly, Palantir is currently protected under the patent and is retricted to be 
 * NVIDIA docker: https://github.com/NVIDIA/nvidia-docker
 * Qualcomm SNPE SDK (v1.68.0): https://developer.qualcomm.com/software/qualcomm-neural-processing-sdk/tools
   (We cannot provide this due to the Qualcom license policy.)
+* Android Studio Hedgehog | 2023.1.1 (Build #AI-231.9392.1.2311.11076708, built on November 10, 2023) + Gradle 7.5 + Android Gradle Plugin Version 7.4.1 + Java 8 + API 29 ("Q"; Android 10.0) + Build Tools 29.0.2.
 
 ## Guide
 
@@ -183,9 +184,9 @@ $PALANTIR_CODE_ROOT/palantir/test/script/setup_local.sh
 
 * Copy data (including the DNN model, the profile, the low-resolution video, and the SR-integrated libvpx decoder) to mobile devices (use `adb devices` in the container to obtain the  `device_id`)
 ```
-$PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p [profile_name] -d [device_id] -W 170 -H 160
-(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_palantir_75_w170_h160_nanchors_15 -d [device_id] -W 170 -H 160)
-(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_neuroscaler_5_w854_h480_nanchors_1 -d [device_id] -W 170 -H 160)
+$PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a [algorithm_name] -p [profile_name] -d [device_id] -W 170 -H 160 -g 60
+(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_palantir_75_w170_h160_nanchors_15 -d [device_id] -W 170 -H 160 -g 60)
+(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a neuroscaler -p nchunks_150_neuroscaler_5_w854_h480_nanchors_1 -d [device_id] -W 854 -H 480 -g 60)
 ```
 
 * Execute the decoder through the adb shell 
@@ -249,3 +250,32 @@ $PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -
 
 ### 8. (Optional) Build and install the SR-integrated Exoplayer Android app
 
+* Setup: Copy data to mobile devices
+```
+$PALANTIR_CODE_ROOT/palantir/player/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a [algorithm_name] -p [cache_profile_name] -d ${deviceId} -W 170 -H 160 -g 60
+(e.g., $PALANTIR_CODE_ROOT/palantir/player/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_palantir_75_w170_h160_nanchors_15 -d [device_id] -W 170 -H 160 -g 60)
+(e.g., $PALANTIR_CODE_ROOT/palantir/player/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a neuroscaler -p nchunks_150_neuroscaler_5_w854_h480_nanchors_1 -d [device_id] -W 854 -H 480 -g 60)
+```
+
+* Build and install the player app
+1. Enable USB debugging and USB install at mobiles.
+2. Outside the docker container: open `$HOME/docker/palantir/palantir/palantir/player` using Android Studio
+3. Inside the docker container: 
+  
+```
+cp -r /workspace/palantir/third_party/libvpx /workspace/palantir/palantir/player/ExoPlayer/extensions/vp9/src/main/jni && cp /workspace/palantir/third_party/snpe/lib/aarch64-android-clang8.0/libc++_shared.so /android-ndk-r14b/sources/cxx-stl/llvm-libc++/libs/arm64-v8a
+cd /workspace/palantir/palantir/player/ExoPlayer/extensions/vp9/src/main/jni/libvpx
+make distclean
+cd ..
+```
+4. Inside the docker container: build vp9 extension according to the [documentation](./palantir/player/ExoPlayer/extensions/vp9/README.md)
+5. Inside the docker container:
+```
+cp -r /android-ndk-r14b /workspace/android-ndk-r14b
+```
+6. Outside the docker container:
+```
+sudo apt-get install libncurses5 make
+```
+7. Outside the docker container: set ndk path in local.properties as `ndk.dir=/home/[user_name]/docker/palantir/android-ndk-r14b`, using Android Studio.
+8. Outside the docker container: build & install it with Android studio.

@@ -470,7 +470,7 @@ static void _mkdir(const char *dir) {
 
 DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
              jboolean enableBufferManager, jstring content_path, jstring quality, jint resolution,
-             jint decode_mode, jstring profile, jint newModelPerChunk,
+             jint decode_mode, jstring profile,
              jint num_patches_per_row, jint num_patches_per_column, jint patch_width, jint patch_height) {
 
     JniCtx *context = new JniCtx(enableBufferManager);
@@ -496,7 +496,6 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     /* PALANTIR: load palantir_cfg, dnn, cache_profile */
     palantir_cfg_t *palantir_cfg = init_palantir_cfg();
     palantir_cfg->chunk_idx = 0;
-    palantir_cfg->newmodelperchunkarg = newModelPerChunk;
     palantir_cfg->num_patches_per_row = num_patches_per_row;
     palantir_cfg->num_patches_per_column = num_patches_per_column;
     palantir_cfg->patch_width = patch_width;
@@ -588,14 +587,10 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
 
     if (palantir_cfg->decode_mode == DECODE_SR || palantir_cfg->decode_mode == DECODE_CACHE || palantir_cfg->decode_mode == DECODE_BLOCK_CACHE) {
         strcpy(palantir_cfg->dnn_name, dnn_name);
-        if (palantir_cfg->newmodelperchunkarg==0) {
-            if (palantir_cfg->decode_mode == DECODE_BLOCK_CACHE) {
-                sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s/%s_block_%d_%d.dlc", content_dir, input_video_name, dnn_name, palantir_cfg->patch_width, palantir_cfg->patch_height);
-            } else {
-                sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s/%s_frame.dlc", content_dir, input_video_name, dnn_name);
-            }
+        if (palantir_cfg->decode_mode == DECODE_BLOCK_CACHE) {
+            sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s/%s_block_%d_%d.dlc", content_dir, input_video_name, dnn_name, palantir_cfg->patch_width, palantir_cfg->patch_height);
         } else {
-            sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s", content_dir, input_video_name);
+            sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s/%s_frame.dlc", content_dir, input_video_name, dnn_name);
         }
     }
 
@@ -638,16 +633,9 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     }
 
     if (palantir_cfg->decode_mode == DECODE_SR || palantir_cfg->decode_mode == DECODE_CACHE || palantir_cfg->decode_mode == DECODE_BLOCK_CACHE) {
-        if (newModelPerChunk) {
-            if (vpx_load_palantir_dnn(context->decoder, scale, NULL)) {
-                LOGE("fail2.1");
-                LOGE("dnn_dir: %s", palantir_cfg->dnn_dir);
-            }
-        } else {
-            if (vpx_load_palantir_dnn(context->decoder, scale, palantir_cfg->dnn_dir)) {
-                LOGE("fail2.2");
-                LOGE("dnn_dir: %s", palantir_cfg->dnn_dir);
-            }
+        if (vpx_load_palantir_dnn(context->decoder, scale, palantir_cfg->dnn_dir)) {
+            LOGE("fail2.2");
+            LOGE("dnn_dir: %s", palantir_cfg->dnn_dir);
         }
     }
 
