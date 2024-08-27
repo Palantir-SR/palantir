@@ -30,7 +30,8 @@ if __name__ == '__main__':
     dest_common_path = os.path.join(args.ndk_dir, "sources/cxx-stl/llvm-libc++/libs")
     # arm64-v8a
     dest = os.path.join(os.path.join(dest_common_path, "arm64-v8a"), "libc++_shared.so")
-    os.remove(dest)
+    if os.path.exists(dest):
+        os.remove(dest)
     src = os.path.join(args.snpe_dir, "lib/aarch64-android-clang8.0/libc++_shared.so")
     shutil.copy(src, dest)
     '''

@@ -40,7 +40,10 @@ Lastly, Palantir is currently protected under the patent and is retricted to be 
   (We cannot provide this due to the Qualcom license policy.)
 
 ## Guide
+
 We provide a step-by-step guide with a single video (whose index is 1).
+
+All the commands for the Step 2-7 must be executed inside the docker.
 
 ### 1. Setup
 * Clone the Palantir docker repository
@@ -170,12 +173,22 @@ TODO
 TODO
 ```
 
-### 5. Execute in Android smartphones 
+### 5. Execute in Android adb shell 
 
 * Setup: Build the SR-integrated codec (arm64-v8)
 ```
+# Execute the following command in the docker:
 $PALANTIR_CODE_ROOT/palantir/test/script/setup_local.sh 
 ```
+
+* Copy data (including the DNN model, the profile, the low-resolution video, and the SR-integrated libvpx decoder) to mobile devices (use `adb devices` in the container to obtain the  `device_id`)
+```
+$PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p [profile_name] -d [device_id] -W 170 -H 160
+(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_palantir_75_w170_h160_nanchors_15 -d [device_id] -W 170 -H 160)
+(e.g., $PALANTIR_CODE_ROOT/palantir/test/script/setup_device.sh -c 1 -q high -r 480 -o 2160 -a palantir -p nchunks_150_neuroscaler_5_w854_h480_nanchors_1 -d [device_id] -W 170 -H 160)
+```
+
+* Execute the decoder through the adb shell 
 
 ### 6 (Optional) Preliminary experiment (see Sec. 4.1 of the paper)
 
@@ -233,3 +246,6 @@ $PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -
 ```
 $PALANTIR_CODE_ROOT/palantir/cache_profile/script/select_anchor_points.sh -g 0 -c 1 -q high -i 480 -o 2160 -a partially_optimized_palantir -W 170 -H 160 -m 75 -p generate_profile
 ```
+
+### 8. (Optional) Build and install the SR-integrated Exoplayer Android app
+

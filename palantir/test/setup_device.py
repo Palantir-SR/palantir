@@ -7,7 +7,6 @@ from palantir.tool.snpe import *
 from palantir.tool.video import get_video_profile
 from palantir.dnn.utility import build_model
 from palantir.tool.libvpx  import get_num_threads
-from palantir.dnn.train_video import NORMAL_TRAIN, SUPPORTED_TRAIN_METHODS
 
 
 if __name__ == '__main__':
@@ -106,7 +105,7 @@ if __name__ == '__main__':
     #setup a cache profile
     device_cache_profile_dir = os.path.join(device_root_dir, 'profile', args.video_name, model.name)
     adb_mkdir(device_cache_profile_dir, args.device_id)
-    cache_profile_path = os.path.join(args.data_dir, args.content, 'profile', args.video_name, model.name, '.' if args.chunk_idx is None else "chunk{:04d}".format(args.chunk_idx), '{}.profile'.format(args.profile_name))
+    cache_profile_path = os.path.join(args.data_dir, args.content, 'profile', args.video_name, model.name, 'aggregated' if args.chunk_idx is None else "chunk{:04d}".format(args.chunk_idx), '{}.profile'.format(args.profile_name))
     adb_push(device_cache_profile_dir, cache_profile_path, args.device_id)
 
     # limit and skip

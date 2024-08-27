@@ -84,11 +84,6 @@ if [ -z "${input_resolution+x}" ]; then
     exit 1;
 fi
 
-if [ -z "${train_method+x}" ]; then
-    echo "[WARNING] train_method is not set, so the default value ('anchor_block_sr') is used"
-    train_method="anchor_block_sr"
-fi
-
 if [ -z "${output_resolution+x}" ]; then
     echo "[ERROR] output_resolution is not set"
     exit 1;
@@ -116,7 +111,7 @@ fi
 
 _set_conda
 _set_output_size ${output_resolution}
-_set_bitrate ${input_resolution}
+_set_input_size ${input_resolution}
 _set_num_blocks ${input_resolution} ${quality}
 _set_num_filters ${input_resolution} ${quality}
 _set_lr_video_name

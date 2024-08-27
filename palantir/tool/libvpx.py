@@ -26,7 +26,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 from palantir.tool.video import get_video_profile
-from palantir.tool.motion import blockMotion
 from palantir.dnn.dataset import single_raw_dataset, single_raw_dataset_with_name
 
 class Frame():

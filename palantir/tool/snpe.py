@@ -9,8 +9,8 @@ import imageio
 import numpy as np
 import tensorflow as tf
 
-from nemo.tool.adb import adb_pull
-from nemo.dnn.utility import raw_quality
+from palantir.tool.adb import adb_pull
+from palantir.dnn.utility import raw_quality
 
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
 
