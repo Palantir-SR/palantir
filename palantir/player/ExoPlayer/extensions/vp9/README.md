@@ -55,7 +55,7 @@ git checkout 996a2bbd
 
 ```
 cd ${VP9_EXT_PATH}/jni && \
-./generate_libvpx_android_configs.sh "${NDK_PATH}"
+./generate_libvpx_android_configs.sh /android-ndk-r14b
 ```
 
 * Build the JNI native libraries from the command line:

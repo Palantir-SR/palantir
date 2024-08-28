@@ -165,11 +165,11 @@ public class LibvpxVideoRenderer extends BaseRenderer {
   public int resolution;
   public int decodeMode;
   public String profile;
-  public int newModelPerChunk;
   public int num_patches_per_row;
   public int num_patches_per_column;
   public int patch_width;
   public int patch_height;
+  public int gop;
 
   /**
    * @param scaleToFit Whether video frames should be scaled to fit when rendering.
@@ -209,8 +209,8 @@ public class LibvpxVideoRenderer extends BaseRenderer {
   public LibvpxVideoRenderer(boolean scaleToFit, long allowedJoiningTimeMs,
                              Handler eventHandler, VideoRendererEventListener eventListener,
                              int maxDroppedFramesToNotify, String contentPath, String quality,
-                             int resolution, int decodeMode, String profile, int newModelPerChunk,
-                             int num_patches_per_row, int num_patches_per_column, int patch_width, int patch_height) {
+                             int resolution, int decodeMode, String profile,
+                             int num_patches_per_row, int num_patches_per_column, int patch_width, int patch_height, int gop) {
     this(
             scaleToFit,
             allowedJoiningTimeMs,
@@ -226,11 +226,11 @@ public class LibvpxVideoRenderer extends BaseRenderer {
     this.resolution = resolution;
     this.decodeMode = decodeMode;
     this.profile = profile;
-    this.newModelPerChunk = newModelPerChunk;
     this.num_patches_per_row = num_patches_per_row;
     this.num_patches_per_column = num_patches_per_column;
     this.patch_width = patch_width;
     this.patch_height = patch_height;
+    this.gop = gop;
   }
   /*** PALANTIR***/
 
@@ -797,11 +797,11 @@ public class LibvpxVideoRenderer extends BaseRenderer {
               resolution,
               decodeMode,
               profile,
-              newModelPerChunk,
               num_patches_per_row,
               num_patches_per_column,
               patch_width,
-              patch_height);
+              patch_height,
+              gop);
       decoder.setOutputMode(outputMode);
       TraceUtil.endSection();
       long decoderInitializedTimestamp = SystemClock.elapsedRealtime();

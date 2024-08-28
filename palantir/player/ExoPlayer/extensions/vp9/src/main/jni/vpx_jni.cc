@@ -471,7 +471,7 @@ static void _mkdir(const char *dir) {
 DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
              jboolean enableBufferManager, jstring content_path, jstring quality, jint resolution,
              jint decode_mode, jstring profile,
-             jint num_patches_per_row, jint num_patches_per_column, jint patch_width, jint patch_height) {
+             jint num_patches_per_row, jint num_patches_per_column, jint patch_width, jint patch_height, jint gop) {
 
     JniCtx *context = new JniCtx(enableBufferManager);
     context->decoder = new vpx_codec_ctx_t();
@@ -500,7 +500,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     palantir_cfg->num_patches_per_column = num_patches_per_column;
     palantir_cfg->patch_width = patch_width;
     palantir_cfg->patch_height = patch_height;
-
+    palantir_cfg->gop = gop;
 
     palantir_cfg->decode_mode = static_cast<palantir_decode_mode>(decode_mode);
     if (palantir_cfg->decode_mode == DECODE_SR) {
@@ -542,7 +542,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
         scale = 6;
     }
     else if (resolution_ == 480) {
-        input_video_name = "480p_1600kbps_s0_d300.webm";
+        input_video_name = "480p_1800kbps_s0_d300.webm";
         scale = 4;
     }
 
@@ -593,7 +593,6 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
             sprintf(palantir_cfg->dnn_dir, "%s/checkpoint/%s/%s_frame.dlc", content_dir, input_video_name, dnn_name);
         }
     }
-
 
     LOGE("contentPath: %s, quality_: %s, resolution: %d", contentPath, quality_, resolution_);
     LOGE("dnn_dir: %s, cache_profile_file: %s", palantir_cfg->dnn_dir);

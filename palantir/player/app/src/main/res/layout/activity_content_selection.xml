@@ -31,20 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <Spinner
-        android:id="@+id/select_loopback"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp" />
-
-    <Spinner
-        android:id="@+id/select_new_model_per_chunk"
-        android:layout_width="110dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp" />
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -149,6 +135,28 @@
 
         <EditText
             android:id="@+id/input_patch_height"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="请输入内容"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Input gop:" />
+
+        <EditText
+            android:id="@+id/input_gop"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

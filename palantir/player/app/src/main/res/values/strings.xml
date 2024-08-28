@@ -3,15 +3,11 @@
 
     <string-array name = "content">
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
         <item>4</item>
-        <item>7</item>
-        <item>10</item>
-        <item>13</item>
-        <item>16</item>
-        <item>19</item>
-        <item>23</item>
-        <item>25</item>
-        <item>28</item>
+        <item>5</item>
+        <item>6</item>
     </string-array>
 
     <string-array name = "quality">
@@ -31,19 +27,6 @@
         <item>Decode-SR</item>
         <item>Decode-Cache</item>
         <item>Decode-Block-Cache</item>
-    </string-array>
-
-    <string-array name = "loopback">
-        <item>None</item>
-        <item>60</item>
-        <item>100</item>
-        <item>350</item>
-        <item>3500</item>
-    </string-array>
-
-    <string-array name="newModelPerChunk">
-        <item>Yes</item>
-        <item>No</item>
     </string-array>
 
 </resources>

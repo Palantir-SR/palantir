@@ -90,11 +90,11 @@ public class DefaultRenderersFactory implements RenderersFactory {
   public int resolution;
   public int decodeMode;
   public String profile;
-  public int newModelPerChunk;
   public int num_patches_per_row;
   public int num_patches_per_column;
   public int patch_width;
   public int patch_height;
+  public int gop;
 
 
   private final Context context;
@@ -136,19 +136,19 @@ public class DefaultRenderersFactory implements RenderersFactory {
 
   /***PALANTIR***/
   public DefaultRenderersFactory(Context context, String contentPath, String quality, int resolution, int decodeMode,
-                                 String profile, int newModelPerChunk, int num_patches_per_row, int num_patches_per_column,
-                                 int patch_width, int patch_height){
+                                 String profile, int num_patches_per_row, int num_patches_per_column,
+                                 int patch_width, int patch_height, int gop){
     this(context);
     this.contentPath = contentPath;
     this.quality = quality;
     this.resolution = resolution;
     this.decodeMode = decodeMode;
     this.profile = profile;
-    this.newModelPerChunk = newModelPerChunk;
     this.num_patches_per_row = num_patches_per_row;
     this.num_patches_per_column = num_patches_per_column;
     this.patch_width = patch_width;
     this.patch_height = patch_height;
+    this.gop = gop;
   }
   /***PALANTIR***/
 
@@ -382,11 +382,11 @@ public class DefaultRenderersFactory implements RenderersFactory {
                   resolution,
                   decodeMode,
                   profile,
-                  newModelPerChunk,
                   num_patches_per_row,
                   num_patches_per_column,
                   patch_width,
-                  patch_height);
+                  patch_height,
+                  gop);
       out.add(extensionRendererIndex++, renderer);
       Log.i(TAG, "Loaded LibvpxVideoRenderer.");
     } catch (ClassNotFoundException e) {

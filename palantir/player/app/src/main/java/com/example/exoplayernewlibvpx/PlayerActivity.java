@@ -50,21 +50,12 @@ public class PlayerActivity extends AppCompatActivity {
                 getIntent().getStringExtra("resolution"),
                 getIntent().getStringExtra("mode"),
                 getIntent().getStringExtra("profile"),
-                getIntent().getStringExtra("newModelPerChunk"),
                 getIntent().getStringExtra("num_patches_per_row"),
                 getIntent().getStringExtra("num_patches_per_column"),
                 getIntent().getStringExtra("patch_width"),
-                getIntent().getStringExtra("patch_height")
+                getIntent().getStringExtra("patch_height"),
+                getIntent().getStringExtra("gop")
         );
-
-//        int loopback = Integer.parseInt(getIntent().getStringExtra("loopback"));
-        String loopback = getIntent().getStringExtra("loopback");
-        if(loopback.matches("None")) {
-            Log.e("loopback", "no loopback");
-        }
-        else{
-            loopExoPlayer(Integer.parseInt(loopback));
-        }
     }
 
     @Override
@@ -79,20 +70,18 @@ public class PlayerActivity extends AppCompatActivity {
 
     //TODO: video relative path, content path
 
-    private void setupExoPlayer(String content, String quality, String resolution, String mode, String profile,
-                                String newModelPerChunk, String num_patches_per_row, String num_patches_per_column,
-                                String patch_width, String patch_height) {
+    private void setupExoPlayer(String content, String quality, String resolution, String mode, String profile, String num_patches_per_row, String num_patches_per_column,
+                                String patch_width, String patch_height, String gop) {
         String contentPath = DATA_ROOT_PATH + File.separator + content; // TODO: remove index
         String videoName ="";
         int decodeMode = 0;
-        int newModelPerChunkFlag = 0;
 
-        Log.e("loopback", contentPath);
-        Log.e("loopback", quality);
-        Log.e("loopback", resolution);
-        Log.e("loopback", mode);
-        Log.e("loopback", profile);
-        Log.e("loopback", newModelPerChunk);
+        Log.e("contentPath", contentPath);
+        Log.e("quality", quality);
+        Log.e("resolution", resolution);
+        Log.e("mode", mode);
+        Log.e("profile", profile);
+        Log.e("gop", gop);
 
         if (mode.equals("Decode")) {
             decodeMode = 0;
@@ -112,18 +101,12 @@ public class PlayerActivity extends AppCompatActivity {
             videoName = "480p_1800kbps_s0_d300.webm";
         }
 
-        if (newModelPerChunk.equals("Yes")){
-            newModelPerChunkFlag = 1;
-        } else if (newModelPerChunk.equals("No")){
-            newModelPerChunkFlag = 0;
-        }
-
         PlayerView playerView = findViewById(R.id.player);
 
         DefaultRenderersFactory renderFactory = new DefaultRenderersFactory(this, contentPath, quality,
-                Integer.parseInt(resolution), decodeMode, profile, newModelPerChunkFlag,
+                Integer.parseInt(resolution), decodeMode, profile,
                 Integer.parseInt(num_patches_per_row), Integer.parseInt(num_patches_per_column),
-                Integer.parseInt(patch_width), Integer.parseInt(patch_height));
+                Integer.parseInt(patch_width), Integer.parseInt(patch_height), Integer.parseInt(gop));
         renderFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER);
         mSimpleExoPlayer =
                 ExoPlayerFactory.newSimpleInstance(this,

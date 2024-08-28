@@ -50,11 +50,11 @@ import java.nio.ByteBuffer;
   public int resolution;
   public int decodeMode;
   public String profile;
-  public int newModelPerChunk;
   public int num_patches_per_row;
   public int num_patches_per_column;
   public int patch_width;
   public int patch_height;
+  public int gop;
 
   /**
    * Creates a VP9 decoder.
@@ -86,7 +86,7 @@ import java.nio.ByteBuffer;
       throw new VpxDecoderException("Vpx decoder does not support secure decode.");
     }
     vpxDecContext = vpxInit(disableLoopFilter, enableSurfaceYuvOutputMode, contentPath, quality, resolution,
-            decodeMode, profile, newModelPerChunk, num_patches_per_row, num_patches_per_column, patch_width, patch_height);
+            decodeMode, profile, num_patches_per_row, num_patches_per_column, patch_width, patch_height, gop);
     if (vpxDecContext == 0) {
       throw new VpxDecoderException("Failed to initialize decoder");
     }
@@ -107,11 +107,11 @@ import java.nio.ByteBuffer;
           int resolution,
           int decodeMode,
           String profile,
-          int newModelPerChunk,
           int num_patches_per_row,
           int num_patches_per_column,
           int patch_width,
-          int patch_height
+          int patch_height,
+          int gop
           )
           throws VpxDecoderException {
     super(new VpxInputBuffer[numInputBuffers], new VpxOutputBuffer[numOutputBuffers]);
@@ -120,11 +120,11 @@ import java.nio.ByteBuffer;
     this.resolution = resolution;
     this.decodeMode = decodeMode;
     this.profile = profile;
-    this.newModelPerChunk = newModelPerChunk;
     this.num_patches_per_row = num_patches_per_row;
     this.num_patches_per_column = num_patches_per_column;
     this.patch_width = patch_width;
     this.patch_height = patch_height;
+    this.gop = gop;
 
     if (!VpxLibrary.isAvailable()) {
       throw new VpxDecoderException("Failed to load decoder native libraries.");
@@ -134,7 +134,7 @@ import java.nio.ByteBuffer;
       throw new VpxDecoderException("Vpx decoder does not support secure decode.");
     }
     vpxDecContext = vpxInit(disableLoopFilter, enableSurfaceYuvOutputMode,contentPath,quality,resolution,
-            decodeMode, profile, newModelPerChunk, num_patches_per_row, num_patches_per_column, patch_width, patch_height);
+            decodeMode, profile, num_patches_per_row, num_patches_per_column, patch_width, patch_height, gop);
     if (vpxDecContext == 0) {
       throw new VpxDecoderException("Failed to initialize decoder");
     }
@@ -236,8 +236,8 @@ import java.nio.ByteBuffer;
   }
 
   private native long vpxInit(boolean disableLoopFilter, boolean enableSurfaceYuvOutputMode, String contentPath,
-                              String quality, int resolution, int decodeMode, String profile, int newModelPerChunk,
-                              int num_patches_per_row, int num_patches_per_column, int patch_width, int patch_height);
+                              String quality, int resolution, int decodeMode, String profile,
+                              int num_patches_per_row, int num_patches_per_column, int patch_width, int patch_height, int gop);
 
   private native long vpxClose(long context);
   private native long vpxDecode(long context, ByteBuffer encoded, int length);

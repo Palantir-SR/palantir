@@ -20,13 +20,12 @@ public class ContentSelectionActivity extends AppCompatActivity {
     Spinner qualitySpinner;
     Spinner resolutionSpinner;
     Spinner modeSpinner;
-    Spinner loopbackSpinner;
-    Spinner newModelPerChunkSpinner;
     EditText inputProfileEditText;
     EditText inputNumPatchesPerRowEditText;
     EditText inputNumPatchesPerColumnEditText;
     EditText inputPatchWidthEditText;
     EditText inputPatchHeightEditText;
+    EditText inputGopEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +56,12 @@ public class ContentSelectionActivity extends AppCompatActivity {
         modeSpinner = findViewById(R.id.select_mode);
         modeSpinner.setAdapter(modeAdapter);
 
-        ArrayAdapter<CharSequence> loopbackAdapter = ArrayAdapter.createFromResource(this, R.array.loopback, android.R.layout.simple_spinner_item);
-        loopbackAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        loopbackSpinner = findViewById(R.id.select_loopback);
-        loopbackSpinner.setAdapter(loopbackAdapter);
-
-        ArrayAdapter<CharSequence> newModelPerChunkAdapter = ArrayAdapter.createFromResource(this, R.array.newModelPerChunk, android.R.layout.simple_spinner_item);
-        newModelPerChunkAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        newModelPerChunkSpinner = findViewById(R.id.select_new_model_per_chunk);
-        newModelPerChunkSpinner.setAdapter(newModelPerChunkAdapter);
-
         inputProfileEditText = findViewById(R.id.input_profile);
         inputNumPatchesPerRowEditText = findViewById(R.id.input_num_patches_per_row);
         inputNumPatchesPerColumnEditText = findViewById(R.id.input_num_patches_per_column);
         inputPatchWidthEditText = findViewById(R.id.input_patch_width);
         inputPatchHeightEditText = findViewById(R.id.input_patch_height);
+        inputGopEditText = findViewById(R.id.input_gop);
 
         findViewById(R.id.start).setOnClickListener((view)->{
                 Intent intent = new Intent(ContentSelectionActivity.this, PlayerActivity.class);
@@ -79,13 +69,12 @@ public class ContentSelectionActivity extends AppCompatActivity {
                 intent.putExtra("quality", qualitySpinner.getSelectedItem().toString());
                 intent.putExtra("resolution", resolutionSpinner.getSelectedItem().toString());
                 intent.putExtra("mode",modeSpinner.getSelectedItem().toString());
-                intent.putExtra("loopback",loopbackSpinner.getSelectedItem().toString());
-                intent.putExtra("newModelPerChunk",newModelPerChunkSpinner.getSelectedItem().toString());
                 intent.putExtra("profile", inputProfileEditText.getText().toString());
                 intent.putExtra("num_patches_per_row", inputNumPatchesPerRowEditText.getText().toString());
                 intent.putExtra("num_patches_per_column", inputNumPatchesPerColumnEditText.getText().toString());
                 intent.putExtra("patch_width", inputPatchWidthEditText.getText().toString());
                 intent.putExtra("patch_height", inputPatchHeightEditText.getText().toString());
+                intent.putExtra("gop", inputGopEditText.getText().toString());
                 startActivity(intent);
             }
         );
