@@ -5,14 +5,21 @@ This is an official Github repository for the paper "Palantir: Towards Efficient
 
 If you use our work for research, please cite it.
 ```
-@misc{jin2024palantir,
-      title={Palantir: Towards Efficient Super Resolution for Ultra-high-definition Live Streaming}, 
-      author={Xinqi Jin and Zhui Zhu and Xikai Sun and Fan Dang and Jiangchuan Liu and Jingao Xu and Kebin Liu and Xinlei Chen and Yunhao Liu},
-      year={2024},
-      eprint={2408.06152},
-      archivePrefix={arXiv},
-      primaryClass={cs.MM},
-      url={https://arxiv.org/abs/2408.06152}, 
+@inproceedings{10.1145/3712676.3714434,
+author = {Jin, Xinqi and Zhu, Zhui and Sun, Xikai and Dang, Fan and Liu, Jiangchuan and Xu, Jingao and Liu, Kebin and Chen, Xinlei and Liu, Yunhao},
+title = {Palantir: Towards Efficient Super Resolution for Ultra-high-definition Live Streaming},
+year = {2025},
+isbn = {9798400714672},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3712676.3714434},
+doi = {10.1145/3712676.3714434},
+booktitle = {Proceedings of the 16th ACM Multimedia Systems Conference},
+pages = {12–23},
+numpages = {12},
+keywords = {video streaming, super-resolution, video codec},
+location = {Stellenbosch, South Africa},
+series = {MMSys '25}
 }
 ```
 Lastly, Palantir is currently protected under the patent and is retricted to be used for the commercial usage.  
